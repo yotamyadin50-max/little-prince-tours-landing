@@ -3,7 +3,7 @@
   --color-surface: #F5E6D3;
   --color-ink: #2B1B12;
   --color-primary: #6B3654;
-  --color-accent: #E1651F;
+  --color-accent: #C68A2E;
   --color-accent-label: #2B1B12;
   --color-muted: #7A6858;
   --color-success: #3F7D5C;
@@ -288,7 +288,7 @@ section { padding-block: var(--section-padding); }
   gap: var(--space-3);
 }
 .tour-card {
-  background: #fff;
+  background: var(--color-ink);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
   overflow: hidden;
@@ -296,6 +296,7 @@ section { padding-block: var(--section-padding); }
   flex-direction: column;
   transition: transform 250ms ease-out, box-shadow 250ms ease-out;
 }
+.tour-card h3 { color: #FBF6EF; }
 .tour-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 10px rgba(29,32,30,0.10), 0 14px 28px rgba(29,32,30,0.14);
@@ -312,27 +313,25 @@ section { padding-block: var(--section-padding); }
 .tour-card-body { padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
 .price-tag {
   display: inline-block;
-  background: var(--color-primary);
-  color: #fff;
+  background: none;
+  color: var(--color-accent);
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 16px;
-  padding: 6px 14px;
-  border-radius: var(--radius);
-  margin-block: 4px var(--space-1);
+  font-weight: 800;
+  font-size: 22px;
+  padding: 0;
+  margin-block: 4px 0;
   align-self: flex-start;
-  box-shadow: 0 2px 6px rgba(107,54,84,0.35);
 }
-.tour-duration { color: var(--color-muted); font-size: 14px; }
+.tour-duration { color: #C9BEB2; font-size: 14px; }
 .price-options {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   margin-block: 4px var(--space-1);
 }
-.price-option { display: flex; flex-direction: column; gap: 4px; }
+.price-option { display: flex; flex-direction: column; gap: 2px; }
 .price-option .price-tag { margin-block: 0; }
-.price-or { color: var(--color-muted); font-size: 14px; }
+.price-or { color: #C9BEB2; font-size: 14px; }
 .tour-card blockquote.pull-quote {
   font-size: 16px;
   margin-block: var(--space-1);
@@ -342,14 +341,14 @@ section { padding-block: var(--section-padding); }
   padding: 10px 12px;
   width: 100%;
 }
-.tour-card p.desc { color: var(--color-ink); font-size: 15.5px; }
+.tour-card p.desc { color: #E9E2D8; font-size: 15.5px; }
 .tour-card .btn { margin-top: auto; }
 .card-divider {
   margin: auto 0 0 0;
   padding: 0;
   height: 0;
   border: none;
-  border-top: 1px solid rgba(29,32,30,0.08);
+  border-top: 1px solid rgba(255,255,255,0.12);
   width: 100%;
 }
 .card-divider + .btn { margin-top: var(--space-2); }
