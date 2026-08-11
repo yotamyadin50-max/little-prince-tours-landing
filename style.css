@@ -145,7 +145,7 @@ section { padding-block: var(--section-padding); }
 .hero-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(43,20,35,0.82) 0%, rgba(107,54,84,0.45) 40%, rgba(225,101,31,0.12) 75%, rgba(225,101,31,0.02) 100%);
+  background: linear-gradient(to top, rgba(43,20,35,0.82) 0%, rgba(107,54,84,0.45) 40%, rgba(198,138,46,0.12) 75%, rgba(198,138,46,0.02) 100%);
 }
 .hero-inner {
   position: relative;
@@ -432,8 +432,9 @@ section { padding-block: var(--section-padding); }
 /* Final CTA */
 .final-cta {
   /* Both stops verified by hand against white text: Primary 9.20:1, #8B4A3F 6.67:1.
-     Deliberately stops short of the brighter --color-accent value (only 3.45:1 with white),
-     so contrast holds everywhere in the gradient, not just at the two named stops. */
+     Deliberately stops short of --color-accent (now gold #C68A2E, ~2.97:1 with white,
+     fails AA), so contrast holds everywhere in the gradient, not just at the two named
+     stops. Re-verified 2026-08-11 after the accent shifted from orange to gold. */
   background: linear-gradient(135deg, var(--color-primary) 0%, #8B4A3F 100%);
   color: #fff;
   text-align: center;
