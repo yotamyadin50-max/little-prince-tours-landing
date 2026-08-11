@@ -60,13 +60,13 @@ h1, h2, h3 {
   color: var(--color-ink);
 }
 
-h1 { font-size: 40px; }
-h2 { font-size: 28px; }
+h1 { font-size: 56px; }
+h2 { font-size: 32px; }
 h3 { font-size: 20px; font-weight: 600; }
 
 @media (max-width: 767px) {
-  h1 { font-size: 30px; }
-  h2 { font-size: 22px; }
+  h1 { font-size: 34px; }
+  h2 { font-size: 24px; }
 }
 
 p { margin: 0 0 var(--space-2) 0; }
@@ -127,7 +127,7 @@ section { padding-block: var(--section-padding); }
 /* Hero */
 .hero {
   position: relative;
-  min-height: 92vh;
+  min-height: 96vh;
   display: flex;
   align-items: flex-end;
   overflow: hidden;
@@ -170,8 +170,8 @@ section { padding-block: var(--section-padding); }
   color: #E8E4DC;
   margin-bottom: var(--space-1);
 }
-.hero-inner h1 { color: #fff; font-size: 44px; max-width: 720px; }
-@media (max-width: 767px) { .hero-inner h1 { font-size: 30px; } }
+.hero-inner h1 { color: #fff; font-size: 58px; max-width: 760px; }
+@media (max-width: 767px) { .hero-inner h1 { font-size: 34px; } }
 .hero-sub { font-size: 19px; max-width: 600px; color: #F1EFE9; }
 .hero-microcopy { font-size: 14px; color: #D8D4CB; margin-top: -8px; }
 .hero-scroll-hint {
@@ -191,13 +191,14 @@ section { padding-block: var(--section-padding); }
 .hero-scroll-hint svg { animation: bob 1.8s ease-in-out infinite; }
 @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(6px);} }
 
-/* Offer strip */
+/* Offer strip: a full color band, not a plain text strip */
 .offer-strip {
   text-align: center;
-  padding-block: var(--space-6);
+  padding-block: var(--space-8);
+  background: var(--color-primary);
 }
-.offer-strip h2 { font-size: 24px; }
-.offer-strip p { color: var(--color-muted); max-width: 640px; margin-inline: auto; font-size: 16px; }
+.offer-strip h2 { font-size: 28px; color: #fff; max-width: 720px; margin-inline: auto; }
+.offer-strip p { color: #E9DCE3; max-width: 640px; margin-inline: auto; font-size: 16px; }
 
 /* Authority grid */
 .authority-grid {
@@ -376,7 +377,12 @@ section { padding-block: var(--section-padding); }
 }
 .faq-answer p { padding-bottom: var(--space-2); color: var(--color-ink); font-size: 16px; }
 
-/* Testimonials */
+/* Testimonials: a full color band, cards float white on top of it */
+.testimonials-band {
+  background: var(--color-primary);
+  padding-block: var(--space-8);
+}
+.testimonials-band h2 { color: #fff; }
 .testimonial-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
