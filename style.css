@@ -3,10 +3,12 @@
   --color-surface: #F5E6D3;
   --color-ink: #2B1B12;
   --color-primary: #6B3654;
-  --color-accent: #C68A2E;
-  --color-accent-label: #2B1B12;
+  --color-accent: #8E621F;
+  --color-accent-border: #6D4B18;
+  --color-accent-label: #FDF8F2;
   --color-muted: #7A6858;
   --color-success: #3F7D5C;
+  --color-success-tint: #E7ECE3;
   --color-error: #B3261E;
   --color-info: #5B6B85;
 
@@ -88,6 +90,11 @@ section { padding-block: var(--section-padding); }
 }
 .visually-hidden-focusable:focus { top: 8px; }
 
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -114,6 +121,10 @@ section { padding-block: var(--section-padding); }
 .btn-primary:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
+}
+/* v12 fix: self-toned darker-gold border (same hue as accent), 3.90:1 vs card background — see _process/96 */
+.tour-card .btn-primary {
+  border: 2px solid var(--color-accent-border);
 }
 .btn-outline {
   background: transparent;
@@ -191,70 +202,100 @@ section { padding-block: var(--section-padding); }
 .hero-scroll-hint svg { animation: bob 1.8s ease-in-out infinite; }
 @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(6px);} }
 
-/* Offer strip: a full color band, not a plain text strip */
-.offer-strip {
-  text-align: center;
-  padding-block: var(--space-8);
-  background: var(--color-primary);
-}
-.offer-strip h2 { font-size: 28px; color: #fff; max-width: 720px; margin-inline: auto; }
-.offer-strip p { color: #E9DCE3; max-width: 640px; margin-inline: auto; font-size: 16px; }
-
-/* Authority grid */
+/* Authority facts: was a 3-equal-card grid (identical composition to
+   .tours-grid/.testimonial-grid). Now one credential rail, reusing the
+   .logistics-strip atom (icon+text inline, one shared background, no
+   per-item card) extended from 1 item to 3 with dividers. Zero HTML
+   changes needed, same 3 children (icon-badge div, strong, span) per
+   .authority-card, only re-targeted via CSS grid placement.
+   See _process/107-web-designer-authority-testimonial-fix.md. */
 .authority-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-3);
-}
-@media (max-width: 767px) {
-  .authority-grid { grid-template-columns: 1fr 1fr; }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: var(--color-background);   /* was: none (bg sat on .section-surface directly) */
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  gap: 0;                                  /* dividers separate now, not gap */
 }
 .authority-card {
-  background: var(--color-background);
-  border-radius: var(--radius);
-  padding: var(--space-3);
-  transition: transform 250ms ease-out, box-shadow 250ms ease-out;
+  display: grid;                           /* was: implicit block stack */
+  grid-template-columns: 44px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: var(--space-2);
+  align-items: center;
+  flex: 1 1 260px;
+  max-width: 340px;
+  padding: var(--space-2) var(--space-4);
+  border-inline-start: 1px solid rgba(122,104,88,0.35);  /* --color-muted @ 35%, decorative */
+  background: none;                        /* was: var(--color-background) per-card */
+  transition: none;                        /* was: transform/box-shadow (card-lift, no longer a card) */
 }
-.authority-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-card);
-}
-.icon-badge { transition: transform 250ms ease-out; }
-.authority-card:hover .icon-badge { transform: scale(1.08); }
+.authority-card:first-child { border-inline-start: none; }
+.authority-card:hover { transform: none; box-shadow: none; }  /* explicit: no card-lift */
 .icon-badge {
-  width: 52px;
-  height: 52px;
+  width: 44px;                             /* was: 52px, sized for inline not hero-stack */
+  height: 44px;
+  grid-row: 1 / 3;
+  grid-column: 1;
   border-radius: var(--radius);
   background: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-1);
+  margin-bottom: 0;                        /* was: var(--space-1), stacked-above layout gone */
+  transition: transform 250ms ease-out;
 }
+.authority-card:hover .icon-badge { transform: scale(1.08); }  /* kept: the one micro-interaction that survives */
 .icon-badge .icon { color: #FBEDE2; }
-.authority-card strong { display: block; font-family: var(--font-heading); font-size: 17px; margin-bottom: 4px; }
-.authority-card span { color: var(--color-muted); font-size: 15px; }
+.authority-card strong { grid-column: 2; grid-row: 1; display: block; font-family: var(--font-heading); font-size: 17px; margin-bottom: 2px; }
+.authority-card span { grid-column: 2; grid-row: 2; color: var(--color-muted); font-size: 15px; }
 
-/* Concept section (with background photo) */
+@media (max-width: 767px) {
+  .authority-grid { flex-direction: column; padding: var(--space-2) var(--space-3); }
+  .authority-card {
+    border-inline-start: none;
+    border-block-start: 1px solid rgba(122,104,88,0.35);
+    padding: var(--space-2) 0;
+    max-width: none;
+  }
+  .authority-card:first-child { border-block-start: none; }
+}
+
+/* Concept section: v11 rework, editorial-light block instead of a second
+   full-bleed dark-scrim "cinematic moment" copy of the Hero. Photo becomes a
+   small framing element, a topo-line contour texture replaces the dark scrim.
+   See _process/89-v11-web-designer-visual-spec.md. */
 .concept-section {
   position: relative;
   overflow: hidden;
   padding-block: var(--space-8);
+  background: var(--color-surface); /* was: none (background was the full photo) */
 }
 .concept-section-media {
-  position: absolute;
-  inset: 0;
+  position: relative;              /* was: absolute; inset:0 (full-bleed) */
+  max-width: 420px;
+  aspect-ratio: 1/1;
+  margin: 0 auto var(--space-4);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
 }
 .concept-section-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(1.02) contrast(1.03);
+  filter: sepia(0.15) saturate(1.05) brightness(1.02) contrast(1.03);
 }
 .concept-section-scrim {
+  /* was: dark linear-gradient scrim. now: a topo-contour texture, not a scrim */
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(43,20,35,0.88) 0%, rgba(43,20,35,0.78) 100%);
+  background-image: url("assets/topo-lines.svg");
+  background-repeat: repeat;
+  background-size: 480px auto;
+  opacity: 0.18;                 /* was: 0.06 — see contrast calc, _process/111 */
+  pointer-events: none;
 }
 .concept-block {
   position: relative;
@@ -262,16 +303,14 @@ section { padding-block: var(--section-padding); }
   max-width: 680px;
   margin-inline: auto;
   text-align: center;
-  color: #F9F1EA;
+  color: var(--color-ink); /* was: #F9F1EA */
 }
-.concept-block h2 { color: #fff; }
+.concept-block h2 { color: var(--color-primary); } /* was: #fff */
 .pull-quote {
   font-family: 'Noto Serif Hebrew', serif;
   font-style: italic;
   font-size: 20px;
   color: var(--color-primary);
-  border-inline-start: 3px solid var(--color-primary);
-  padding-inline-start: var(--space-2);
   margin: var(--space-3) 0;
   text-align: start;
   display: inline-flex;
@@ -279,27 +318,73 @@ section { padding-block: var(--section-padding); }
   gap: 8px;
 }
 .quote-glyph { flex-shrink: 0; color: var(--color-primary); margin-top: 2px; }
-.concept-block .pull-quote { color: #F9F1EA; border-inline-start-color: var(--color-accent); }
+.concept-block .pull-quote { color: #F9F1EA; }
+
+/* Founder-voice section: the one asymmetric split-grid layout on the page,
+   deliberately different from the full-bleed/surface-card patterns used by
+   its neighbors so it reads as its own trust-moment, not "more of the same". */
+.founder-section { background: var(--color-background); }
+.founder-grid {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  grid-template-areas: "text image";
+  column-gap: var(--space-4);
+  align-items: center;
+}
+.founder-text { grid-area: text; }
+.founder-text .pull-quote { margin-top: var(--space-3); margin-bottom: 0; }
+.founder-media {
+  grid-area: image;
+  position: relative;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  aspect-ratio: 4/5;
+}
+.founder-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 65% 40%;
+  filter: brightness(1.02) contrast(1.03);
+}
+.founder-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(31,19,13,0.55) 0%, rgba(31,19,13,0) 35%);
+}
+@media (max-width: 767px) {
+  .founder-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas: "image" "text";
+    row-gap: var(--space-3);
+  }
+}
 
 /* Tour cards */
 .tours-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-3);
 }
+@media (max-width: 767px) {
+  .tours-grid { grid-template-columns: 1fr; }
+}
 .tour-card {
-  background: var(--color-ink);
+  background: var(--color-background);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-muted);
+  box-shadow: 0 2px 4px rgba(43,27,18,0.10), 0 10px 24px rgba(43,27,18,0.14);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transition: transform 250ms ease-out, box-shadow 250ms ease-out;
 }
-.tour-card h3 { color: #FBF6EF; }
 .tour-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 10px rgba(29,32,30,0.10), 0 14px 28px rgba(29,32,30,0.14);
+  box-shadow: 0 6px 14px rgba(43,27,18,0.14), 0 20px 36px rgba(43,27,18,0.18);
 }
 .tour-card-media { aspect-ratio: 16/10; overflow: hidden; }
 .tour-card-media img {
@@ -310,11 +395,48 @@ section { padding-block: var(--section-padding); }
   transition: transform 400ms ease-out;
 }
 .tour-card:hover .tour-card-media img { transform: scale(1.05); }
+/* v11 fix: tour-ein-akev.jpg is a portrait source (475x633) forced into the
+   16:10 crop everyone else uses; favor the water in-frame over the sky. */
+.tour-card-media--ein-akev img { object-position: center 30%; }
 .tour-card-body { padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
+
+/* Flagship card (Makhtesh Ramon, now first in the grid): panoramic media,
+   split two-column body on desktop, per _process/89-v11-web-designer-visual-spec.md.
+   The other 4 cards are untouched by this block. */
+.tour-card--flagship {
+  grid-column: 1 / -1;
+  border-color: var(--color-accent-border);   /* persistent identity at every width */
+  border-width: 2px;
+}
+.tour-card--flagship .tour-card-media { aspect-ratio: 16/10; } /* base = same as everyone, overridden at 768px+ */
+
+@media (min-width: 768px) {
+  .tour-card--flagship .tour-card-media { aspect-ratio: 3/1; } /* panoramic, not the uniform 16:10 */
+  .tour-card--flagship .tour-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    grid-template-areas:
+      "title title"
+      "primary secondary"
+      "cta cta";
+    column-gap: var(--space-4);
+    align-items: start;
+  }
+  .tour-card--flagship h3 { grid-area: title; font-size: 28px; }
+  .tour-card--flagship .tour-card-primary {
+    grid-area: primary; display: flex; flex-direction: column; gap: var(--space-1);
+  }
+  .tour-card--flagship .tour-card-secondary { grid-area: secondary; }
+  .tour-card--flagship .card-divider,
+  .tour-card--flagship .btn { grid-area: cta; margin-top: var(--space-2); }
+}
+@media (max-width: 767px) {
+  .tour-card--flagship h3 { font-size: 22px; }
+}
 .price-tag {
   display: inline-block;
   background: none;
-  color: var(--color-accent);
+  color: var(--color-primary);
   font-family: var(--font-heading);
   font-weight: 800;
   font-size: 22px;
@@ -322,7 +444,22 @@ section { padding-block: var(--section-padding); }
   margin-block: 4px 0;
   align-self: flex-start;
 }
-.tour-duration { color: #C9BEB2; font-size: 14px; }
+/* Price-tag reveal: a causal continuation of the parent card's own .reveal
+   entrance, not a parallel/peer stagger — fires 280ms after the card
+   settles, using the same emphasized-decelerate curve reserved for a single
+   spacious-focus moment. No new JS: rides the existing .reveal/.is-visible
+   toggle script.js already applies to .tour-card, including its fallback. */
+.price-tag {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 260ms cubic-bezier(0.05,0.7,0.1,1) 280ms,
+              transform 260ms cubic-bezier(0.05,0.7,0.1,1) 280ms;
+}
+.reveal.is-visible .price-tag {
+  opacity: 1;
+  transform: scale(1);
+}
+.tour-duration { color: var(--color-muted); font-size: 14px; }
 .price-options {
   display: flex;
   align-items: center;
@@ -331,24 +468,41 @@ section { padding-block: var(--section-padding); }
 }
 .price-option { display: flex; flex-direction: column; gap: 2px; }
 .price-option .price-tag { margin-block: 0; }
-.price-or { color: #C9BEB2; font-size: 14px; }
+.price-or { color: var(--color-muted); font-size: 14px; }
+
+/* Trust chip: a small, secondary status pill, deliberately NOT competing
+   visually with .price-tag (which is the attention-getting element). Pill
+   shape (radius 999px) is a deliberate departure from the site's global
+   12px radius, reserved for this chip/badge category only. */
+.trust-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  align-self: flex-start;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--color-success-tint);
+  border: 1px solid rgba(63,125,92,0.85);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--color-ink);
+}
+.trust-chip-icon { color: var(--color-success); flex-shrink: 0; }
 .tour-card blockquote.pull-quote {
   font-size: 16px;
   margin-block: var(--space-1);
-  background: var(--color-background);
-  border-start-end-radius: 8px;
-  border-end-end-radius: 8px;
-  padding: 10px 12px;
   width: 100%;
 }
-.tour-card p.desc { color: #E9E2D8; font-size: 15.5px; }
+.tour-card p.desc { color: var(--color-ink); font-size: 15.5px; }
 .tour-card .btn { margin-top: auto; }
 .card-divider {
   margin: auto 0 0 0;
   padding: 0;
   height: 0;
   border: none;
-  border-top: 1px solid rgba(255,255,255,0.12);
+  border-top: 1px solid rgba(29,32,30,0.12);
   width: 100%;
 }
 .card-divider + .btn { margin-top: var(--space-2); }
@@ -408,26 +562,56 @@ section { padding-block: var(--section-padding); }
   padding-block: var(--space-8);
 }
 .testimonials-band h2 { color: #fff; }
+/* Testimonials: was two identical white cards on the primary band (same
+   card recipe as .authority-card/.tour-card). N=2 reads as an incomplete
+   row. Now an asymmetric duo, mirroring .founder-grid's own 7fr/5fr split.
+   Leah/Eitan (fuller, scene-setting) gets the site's existing pull-quote
+   treatment, used 6x elsewhere, never here before. Zehala (literally about
+   a small detail) gets a smaller, quieter aside, form matches content.
+   See _process/107-web-designer-authority-testimonial-fix.md. */
 .testimonial-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  grid-template-columns: 7fr 5fr;   /* was: 1fr 1fr */
+  column-gap: var(--space-4);
+  align-items: center;               /* matches .founder-grid's own align-items:center */
 }
-@media (max-width: 767px) { .testimonial-grid { grid-template-columns: 1fr; } }
+@media (max-width: 767px) {
+  .testimonial-grid { grid-template-columns: 1fr; row-gap: var(--space-4); }
+}
 .testimonial-card {
-  background: #fff;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-card);
-  padding: var(--space-3);
-  transition: transform 250ms ease-out, box-shadow 250ms ease-out;
+  background: none; box-shadow: none; padding: 0; border-radius: 0; transition: none;
 }
-.testimonial-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 10px rgba(29,32,30,0.10), 0 14px 28px rgba(29,32,30,0.14);
+.testimonial-card:hover { transform: none; box-shadow: none; }
+
+.testimonial-primary .quote-glyph { width: 30px; height: 23px; color: #fff; margin-bottom: var(--space-1); }
+.testimonial-primary p {
+  font-family: 'Noto Serif Hebrew', serif;
+  font-style: italic;
+  font-size: clamp(1.19rem, 1.05rem + 0.7vw, 1.56rem);  /* ~19px -> 25px, fluid per Round 15 */
+  line-height: 1.5;
+  color: #fff;                       /* 9.20:1 on --color-primary, already verified in .final-cta */
 }
-.testimonial-card .quote-glyph { display: block; margin-bottom: 10px; }
-.testimonial-card strong { display: block; font-family: var(--font-heading); color: var(--color-primary); margin-bottom: 6px; }
-.testimonial-card p { margin: 0; }
+.testimonial-primary strong {
+  display: block; font-family: var(--font-heading); font-weight: 600; font-size: 15px;
+  color: #E9DCE3; margin-top: var(--space-1);            /* 6.93:1 on --color-primary */
+}
+
+.testimonial-secondary {
+  border-inline-start: 1px solid rgba(255,255,255,0.25);  /* decorative echo of the rail divider above */
+  padding-inline-start: var(--space-4);
+}
+.testimonial-secondary .quote-glyph { width: 18px; height: 14px; color: #E9DCE3; margin-bottom: 6px; }
+.testimonial-secondary p { font-size: 15px; line-height: 1.5; color: #E9DCE3; margin: 0; }
+.testimonial-secondary strong {
+  display: block; font-family: var(--font-heading); font-weight: 500; font-size: 13px;
+  color: #E9DCE3; margin-top: 4px;
+}
+@media (max-width: 767px) {
+  .testimonial-secondary {
+    border-inline-start: none; padding-inline-start: 0;
+    border-block-start: 1px solid rgba(255,255,255,0.25); padding-block-start: var(--space-3);
+  }
+}
 
 /* Final CTA */
 .final-cta {
@@ -491,14 +675,16 @@ footer a { color: #FBEDE2; text-decoration: underline; }
 }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
-/* .tour-card/.authority-card/.testimonial-card also carry .reveal for their
-   scroll-in entrance; equal specificity means source order alone would let
-   .reveal's own transition silently win and drop their hover transition
-   (box-shadow, the hover scale). These compound selectors (higher
-   specificity than .reveal alone) merge both needs into one list instead. */
-.reveal.tour-card,
-.reveal.authority-card,
-.reveal.testimonial-card {
+/* .tour-card also carries .reveal for its scroll-in entrance; equal
+   specificity means source order alone would let .reveal's own transition
+   silently win and drop the hover transition (box-shadow, the hover scale).
+   This compound selector (higher specificity than .reveal alone) merges
+   both needs into one list instead.
+   .authority-card/.testimonial-card dropped from this list per v12 (see
+   _process/107): neither carries a hover-lift anymore now that they're a
+   credential rail / testimonial duo instead of cards, so they only need
+   .reveal's own transition, no merge required. */
+.reveal.tour-card {
   transition: opacity 500ms ease-out, transform 250ms ease-out, box-shadow 250ms ease-out;
 }
 

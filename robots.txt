@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yotamyadin50-max.github.io/little-prince-tours-landing/sitemap.xml
