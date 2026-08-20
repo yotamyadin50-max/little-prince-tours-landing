@@ -583,6 +583,18 @@ section { padding-block: var(--section-padding); }
 }
 .testimonial-card:hover { transform: none; box-shadow: none; }
 
+/* Real aggregate proof (100% recommend / 8 reviews / 645 followers on
+   Yariv's real live Facebook page, verified 2026-08-20, see
+   _process/134-copywriter-social-proof.md), turns 2 quotes into visible
+   proof, not just more quotes. Bolder than the muted caption below it,
+   this is the actual number, not a footnote. */
+.testimonials-stat {
+  color: #fff;
+  font-weight: 600;
+  font-size: 17px;
+  margin-top: var(--space-4);
+}
+
 .testimonial-primary .quote-glyph { width: 30px; height: 23px; color: #fff; margin-bottom: var(--space-1); }
 .testimonial-primary p {
   font-family: 'Noto Serif Hebrew', serif;
