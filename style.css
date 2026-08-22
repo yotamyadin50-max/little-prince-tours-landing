@@ -450,6 +450,16 @@ section { padding-block: var(--section-padding); }
 @media (max-width: 767px) {
   .tours-grid { grid-template-columns: 1fr; }
 }
+/* 5 regular cards (odd) don't divide evenly into 2 columns, leaving the
+   last one dangling alone with an empty cell beside it (Critic finding,
+   _process/141-critic-v14-external.md). The 6th "hakpatsot" card is
+   conceptually different anyway (a logistics add-on, not a tour), so
+   spanning it full-width both fixes the gap and signals that difference,
+   same reasoning as the flagship card's own span, simpler treatment. */
+@media (min-width: 768px) {
+  .tour-card--service { grid-column: 1 / -1; }
+  .tour-card--service .tour-card-media { aspect-ratio: 21/9; }
+}
 .tour-card {
   background: var(--color-background);
   border-radius: var(--radius);
