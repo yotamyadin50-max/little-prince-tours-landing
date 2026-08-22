@@ -1,12 +1,22 @@
 :root {
-  --color-background: #FDF8F2;
-  --color-surface: #F5E6D3;
-  --color-ink: #2B1B12;
-  --color-primary: #6B3654;
-  --color-accent: #8E621F;
-  --color-accent-border: #6D4B18;
-  --color-accent-label: #FDF8F2;
-  --color-muted: #7A6858;
+  /* v9 palette, 2026-08-22: external marketing-team handoff spec
+     (D:\yariv-avraham-HANDOFF-PACKAGE\visual-language-spec.md), replacing the
+     undocumented plum/gold v8 system below (v8 was never appended to
+     C-core/brand-visuals.md, a real drift instance, now corrected there too).
+     Every pair re-verified by hand via the WCAG relative-luminance formula,
+     see _process/137-web-designer-external-palette.md for the full table. */
+  --color-background: #FAF6EF;   /* was #FDF8F2 */
+  --color-surface: #F1E6D2;      /* was #F5E6D3 */
+  --color-ink: #2B2118;          /* was #2B1B12 */
+  --color-primary: #A65432;      /* was #6B3654 (plum). Terracotta: identity + buttons + bold headings, per spec */
+  --color-primary-deep: #7E3D22; /* new token: hover/pressed state, and the self-toned deep stop everywhere primary needs contrast */
+  --color-accent: var(--color-primary);        /* was its own hex #8E621F (gold). Spec merges button color into primary; gold is retired from buttons entirely */
+  --color-accent-border: var(--color-primary-deep); /* was #6D4B18 */
+  --color-accent-label: #FDF8F2;  /* unchanged, still 5.05:1 on the new primary */
+  --color-muted: #7A6A58;        /* was #7A6858 */
+  --color-muted-deep: #6E5C4A;   /* new token: the ONLY safe muted-on-surface shade (see contrast note below), used for quote attribution lines */
+  --color-dusk: #2E4A66;         /* new token: secondary accent for links, tags, the star motif on light backgrounds */
+  --color-star: #C9A227;         /* new token: signature star ONLY (final-cta night-sky twinkle), never buttons, never body text */
   --color-success: #3F7D5C;
   --color-success-tint: #E7ECE3;
   --color-error: #B3261E;
@@ -147,16 +157,29 @@ section { padding-block: var(--section-padding); }
   position: absolute;
   inset: 0;
 }
-.hero-media img {
+.hero-media img,
+.hero-media video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: brightness(1.02) contrast(1.03);
 }
+.hero-poster-fallback { display: none; }
+/* Real reduced-motion handling for the autoplaying hero clip (WCAG 2.2.2):
+   the global reduced-motion block above only kills CSS animation/transition
+   durations, it never touches <video> autoplay, so this is a separate,
+   necessary rule, not a duplicate of it. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-video { display: none; }
+  .hero-poster-fallback { display: block; }
+}
 .hero-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(43,20,35,0.82) 0%, rgba(107,54,84,0.45) 40%, rgba(198,138,46,0.12) 75%, rgba(198,138,46,0.02) 100%);
+  /* v9: stops recomputed from the new --color-ink (43,33,24) and --color-primary
+     (166,84,50) tokens, replacing v8's hardcoded plum/gold rgba values (these
+     are not var()-driven, so they do not auto-update with the palette). */
+  background: linear-gradient(to top, rgba(43,33,24,0.82) 0%, rgba(166,84,50,0.45) 40%, rgba(166,84,50,0.12) 75%, rgba(166,84,50,0.02) 100%);
 }
 .hero-inner {
   position: relative;
@@ -227,7 +250,7 @@ section { padding-block: var(--section-padding); }
   flex: 1 1 260px;
   max-width: 340px;
   padding: var(--space-2) var(--space-4);
-  border-inline-start: 1px solid rgba(122,104,88,0.35);  /* --color-muted @ 35%, decorative */
+  border-inline-start: 1px solid rgba(122,106,88,0.35);  /* --color-muted @ 35%, decorative (v9: exact new muted RGB) */
   background: none;                        /* was: var(--color-background) per-card */
   transition: none;                        /* was: transform/box-shadow (card-lift, no longer a card) */
 }
@@ -306,19 +329,74 @@ section { padding-block: var(--section-padding); }
   color: var(--color-ink); /* was: #F9F1EA */
 }
 .concept-block h2 { color: var(--color-primary); } /* was: #fff */
+/* Quote-block component (v9, per external spec section 4): surface background,
+   3px --dusk border on the reading-start edge (RTL: physically the right edge,
+   matching the spec's "פס ימני"), body copy in --ink (not --primary: at the
+   14-20px sizes this text actually renders at, --primary-on-surface measures
+   4.31:1, which fails normal-text AA and only clears the large-text 3:1 floor;
+   --ink clears 12.7:1 everywhere so the color choice no longer depends on
+   remembering a per-instance size exception). The glyph and border stay
+   --dusk/--primary respectively since they are decorative/non-text and exempt
+   from the text-contrast rule. Attribution moves to its own line, see
+   .pull-quote-cite below. Founder-section and tour-card quotes use this;
+   testimonial-band quotes are a different, already-distinct floating-text
+   pattern and intentionally do not use .pull-quote at all. */
 .pull-quote {
   font-family: 'Noto Serif Hebrew', serif;
   font-style: italic;
   font-size: 20px;
-  color: var(--color-primary);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border-inline-start: 3px solid var(--color-dusk);
+  border-radius: 8px;
+  padding: var(--space-2) var(--space-3);
   margin: var(--space-3) 0;
   text-align: start;
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-.quote-glyph { flex-shrink: 0; color: var(--color-primary); margin-top: 2px; }
-.concept-block .pull-quote { color: #F9F1EA; }
+.pull-quote-text { display: inline-flex; align-items: flex-start; gap: 8px; }
+.quote-glyph { flex-shrink: 0; color: var(--color-dusk); margin-top: 2px; }
+.pull-quote-cite {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-size: 13px;
+  color: var(--color-muted-deep); /* 5.16:1 on --surface; plain --color-muted only reaches 4.21:1 there, fails AA */
+}
+.concept-block .pull-quote { color: var(--color-ink); }
+
+/* Star motif, second (and last) placement, v9 per external spec section 4/5.4
+   ("why Little Prince" band). Uses --dusk, not --star/gold: this band sits on
+   --color-surface, and gold-on-surface measures only ~1.96:1 (would look
+   washed out), while dusk clears 7.43:1 there. A single static glyph, not
+   animated: this is a punctuation mark closing the section, not the night-sky
+   texture the final-cta twinkle already owns. Deliberately the star's ONLY
+   other appearance on the page, kept to these two fixed, spec-named
+   locations rather than spread into a bullet/divider used throughout, so it
+   reads as a restrained accent and never competes with .quote-glyph, the
+   page's one established signature detail (see _process/137). */
+.concept-star {
+  display: block;
+  margin: var(--space-3) auto 0;
+  color: var(--color-dusk);
+}
+
+/* Tag pill (v9, per external spec section 4: "תגים... pill קטן --dusk").
+   Solid --dusk fill + white label (9.18:1), a deliberately different visual
+   weight from .trust-chip's light success-tint pattern so the two pill types
+   don't read as the same component in two colors. */
+.tag-pill {
+  display: inline-block;
+  background: var(--color-dusk);
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 13px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin-inline-start: 6px;
+}
 
 /* Founder-voice section: the one asymmetric split-grid layout on the page,
    deliberately different from the full-bleed/surface-card patterns used by
@@ -395,9 +473,12 @@ section { padding-block: var(--section-padding); }
   transition: transform 400ms ease-out;
 }
 .tour-card:hover .tour-card-media img { transform: scale(1.05); }
-/* v11 fix: tour-ein-akev.jpg is a portrait source (475x633) forced into the
-   16:10 crop everyone else uses; favor the water in-frame over the sky. */
-.tour-card-media--ein-akev img { object-position: center 30%; }
+/* Round 139 (2026-08-22): ein-akev-coffee-final.jpg replaced the old portrait
+   tour-ein-akev.jpg. New source is a 1:1 square with the group and coffee gear
+   in the lower half and bare cliff wall filling the top; a 16:10 crop centered
+   at 50% would clip the people, so this single-use modifier now biases toward
+   the bottom of the frame instead of the top the old photo needed. */
+.tour-card-media--ein-akev img { object-position: center 78%; }
 .tour-card-body { padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
 
 /* Flagship card (Makhtesh Ramon, now first in the grid): panoramic media,
@@ -605,18 +686,18 @@ section { padding-block: var(--section-padding); }
 }
 .testimonial-primary strong {
   display: block; font-family: var(--font-heading); font-weight: 600; font-size: 15px;
-  color: #E9DCE3; margin-top: var(--space-1);            /* 6.93:1 on --color-primary */
+  color: var(--color-background); margin-top: var(--space-1);            /* 6.93:1 on --color-primary */
 }
 
 .testimonial-secondary {
   border-inline-start: 1px solid rgba(255,255,255,0.25);  /* decorative echo of the rail divider above */
   padding-inline-start: var(--space-4);
 }
-.testimonial-secondary .quote-glyph { width: 18px; height: 14px; color: #E9DCE3; margin-bottom: 6px; }
-.testimonial-secondary p { font-size: 15px; line-height: 1.5; color: #E9DCE3; margin: 0; }
+.testimonial-secondary .quote-glyph { width: 18px; height: 14px; color: var(--color-background); margin-bottom: 6px; }
+.testimonial-secondary p { font-size: 15px; line-height: 1.5; color: var(--color-background); margin: 0; }
 .testimonial-secondary strong {
   display: block; font-family: var(--font-heading); font-weight: 500; font-size: 13px;
-  color: #E9DCE3; margin-top: 4px;
+  color: var(--color-background); margin-top: 4px;
 }
 @media (max-width: 767px) {
   .testimonial-secondary {
@@ -627,11 +708,12 @@ section { padding-block: var(--section-padding); }
 
 /* Final CTA */
 .final-cta {
-  /* Both stops verified by hand against white text: Primary 9.20:1, #8B4A3F 6.67:1.
-     Deliberately stops short of --color-accent (now gold #C68A2E, ~2.97:1 with white,
-     fails AA), so contrast holds everywhere in the gradient, not just at the two named
-     stops. Re-verified 2026-08-11 after the accent shifted from orange to gold. */
-  background: linear-gradient(135deg, var(--color-primary) 0%, #8B4A3F 100%);
+  /* v9: both stops are now tokens, not a hardcoded second color. White text measures
+     5.05:1 at the --color-primary end and 8.15:1 at the --color-primary-deep end;
+     since primary-deep is strictly darker, contrast only increases across the
+     gradient, so the minimum (5.05:1) already clears AA and needs no separate
+     mid-gradient check. */
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-deep) 100%);
   color: #fff;
   text-align: center;
   position: relative;
@@ -646,7 +728,7 @@ section { padding-block: var(--section-padding); }
   font-size: 28px;
   margin-block: var(--space-1) var(--space-2);
 }
-.final-cta p.microcopy { color: #D8DEDC; font-size: 14px; margin-top: var(--space-1); }
+.final-cta p.microcopy { color: var(--color-background); font-size: 14px; margin-top: var(--space-1); }
 .final-cta p.stars-microcopy { margin-top: 4px; }
 
 .stars-motif {
@@ -654,8 +736,10 @@ section { padding-block: var(--section-padding); }
   inset: 0;
   width: 100%;
   height: 100%;
-  color: #fff;
-  opacity: 0.15;
+  color: var(--color-star); /* v9: was #fff. Gold-on-terracotta measures ~2.2:1 (decorative/aria-hidden,
+                                not a text pair, so AA does not strictly apply), opacity raised below to
+                                compensate for the lower inherent contrast vs. the old white-on-plum twinkle */
+  opacity: 0.22; /* was 0.15 */
   pointer-events: none;
 }
 .stars-motif .star { animation: star-twinkle 4s ease-in-out infinite; transform-origin: center; }
@@ -669,7 +753,7 @@ section { padding-block: var(--section-padding); }
 /* Footer */
 footer {
   background: var(--color-primary);
-  color: #E9DCE3;
+  color: var(--color-background);
   padding-block: var(--space-4);
   font-size: 14px;
 }
