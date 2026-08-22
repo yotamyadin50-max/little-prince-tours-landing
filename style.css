@@ -666,6 +666,58 @@ section { padding-block: var(--section-padding); }
 }
 .logistics-strip .icon { color: var(--color-primary); flex-shrink: 0; }
 
+/* Logistics block (2026-08-22): wraps the existing .logistics-strip with a
+   supporting desert-atmosphere photo (05-ein-avdat-canyon.jpg, approved
+   per image-manifest.md's own suggested placement for this exact section --
+   general atmosphere, not a jeep-tour claim, since the photo shows hikers).
+   Stacked on mobile, side-by-side on desktop; .logistics-strip's own copy
+   and internal layout are untouched. */
+.logistics-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.logistics-media {
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 16/9;
+}
+.logistics-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+@media (min-width: 768px) {
+  .logistics-block { flex-direction: row; align-items: stretch; }
+  .logistics-media { flex: 0 0 34%; aspect-ratio: auto; }
+  .logistics-strip { flex: 1; }
+}
+
+/* Secondary supporting photo (2026-08-22): ein-akev-dive-v2.jpg. Per
+   image-manifest.md's own caution, this is deliberately NOT the card's
+   primary image (that stays ein-akev-coffee-final.jpg above) -- a small,
+   captioned secondary thumbnail reading as one more real moment from the
+   spot, not an implicit endorsement of jumping off unmarked ledges. */
+.secondary-photo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  margin: 0;
+}
+.secondary-photo img {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.secondary-photo figcaption {
+  font-size: 12px;
+  color: var(--color-muted);
+}
+
 /* FAQ */
 .faq-list { max-width: 720px; margin-inline: auto; }
 .faq-item {
