@@ -57,6 +57,31 @@
     revealAll();
   }
 
+  // Day-trip film: click-to-play only, never autoplay. The <video> has
+  // preload="none" and starts `hidden`, and a real <img loading="lazy">
+  // serves as the visible poster, so the 63.9MB .mp4 makes zero network
+  // requests until this real <button> is actually activated (click or
+  // keyboard). Once pressed: swap the poster image out for the video,
+  // hand it real native controls, and move focus onto it so a keyboard
+  // user can keep controlling playback (pause, seek) afterwards.
+  var daytripBtn = document.querySelector('.daytrip-play-btn');
+  var daytripVideo = document.querySelector('.daytrip-video');
+  var daytripPoster = document.querySelector('.daytrip-poster');
+  if (daytripBtn && daytripVideo && daytripPoster) {
+    daytripBtn.addEventListener('click', function () {
+      daytripPoster.hidden = true;
+      daytripVideo.hidden = false;
+      daytripVideo.setAttribute('controls', '');
+      daytripVideo.setAttribute('tabindex', '0');
+      var playPromise = daytripVideo.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(function () {});
+      }
+      daytripBtn.hidden = true;
+      daytripVideo.focus();
+    });
+  }
+
   // Floating WhatsApp button appears after scrolling past the hero
   var waFloat = document.getElementById('waFloat');
   var hero = document.querySelector('.hero');

@@ -225,6 +225,32 @@
     </div>
   </section>
 
+  <!-- Day-trip film: click-to-play only, never autoplay. The source file is
+       63.9MB with no compressed web variant (unlike the hero clip's
+       hero-final-v2-12s-web.mp4) and no video-encoding tool is available in
+       this environment to make one. Per HANDOFF-README.md's explicit
+       "לגוף העמוד" instruction for day-trip-film-v3.mp4, and per this page's
+       own established discipline (the hero video is already gated to
+       desktop-only for the same file-weight reason): the .mp4 makes zero
+       network requests until a visitor actually presses the real button
+       below. See _process/142-developer-daytrip-film.md. -->
+  <section class="daytrip-section section-surface">
+    <div class="container daytrip-block reveal">
+      <h2 class="text-center">יום איתי בשטח</h2>
+      <p class="text-center daytrip-intro">לפני שאתם מחליטים, הנה טעימה קצרה מאיך נראה יום טיול אמיתי איתי: הנוף, הקבוצה וכל מה שקורה בין העצירות.</p>
+      <div class="daytrip-media">
+        <img class="daytrip-poster" src="assets/daytrip-poster-sunset-rim.jpg" alt="מדריך מצביע לעבר נוף המכתש בשעת שקיעה, קבוצת מטיילים קטנה לצידו ושני ג'יפי לנד קרוזר חונים מאחור" width="1600" height="893" loading="lazy">
+        <video class="daytrip-video" preload="none" playsinline tabindex="-1" aria-label="יום איתי בשטח, סרטון 28 שניות" hidden>
+          <source src="assets/day-trip-film-v3.mp4" type="video/mp4">
+        </video>
+        <button type="button" class="daytrip-play-btn" aria-label="הפעלת הסרטון יום איתי בשטח">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+      </div>
+      <p class="daytrip-note text-center">סרטון, 28 שניות, בערך 64MB. נטען רק בלחיצה.</p>
+    </div>
+  </section>
+
   <section class="testimonials-band">
     <div class="container">
       <h2 class="text-center reveal">לא רק אני אומר</h2>
