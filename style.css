@@ -798,6 +798,86 @@ section { padding-block: var(--section-padding); }
 .final-cta p.microcopy { color: var(--color-background); font-size: 14px; margin-top: var(--space-1); }
 .final-cta p.stars-microcopy { margin-top: 4px; }
 
+/* Minimal contact form (final-page-copy.md section 9, "טופס מינימלי"): a
+   light card floating on the dark final-cta gradient, mirroring the same
+   real .contact-form / .form-row / .hp-field / .form-success pattern
+   already shipped in the sibling site/contact.html + site/style.css,
+   adapted to this page's own tokens instead of introducing a new one. */
+.final-cta-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 380px;
+  margin: var(--space-4) auto var(--space-3);
+  color: var(--color-background);
+  font-size: 14px;
+}
+.final-cta-divider::before,
+.final-cta-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.35);
+}
+
+.contact-form {
+  max-width: 380px;
+  margin-inline: auto;
+  background: var(--color-background);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  color: var(--color-ink);
+  text-align: start;
+  box-shadow: var(--shadow-card);
+}
+.contact-form-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  color: var(--color-ink);
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+.contact-form .form-row { margin-bottom: var(--space-2); }
+.contact-form .form-row label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-muted-deep);
+  margin-bottom: 4px;
+}
+.contact-form .form-row input,
+.contact-form .form-row select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(122,106,88,0.35);
+  background: #fff;
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+}
+.contact-form .form-row input[type="tel"] { direction: ltr; text-align: end; }
+.contact-form .form-row input:focus-visible,
+.contact-form .form-row select:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 1px;
+}
+.contact-form .hp-field { position: absolute; inset-inline-start: -9999px; }
+.contact-form .btn { width: 100%; }
+.contact-form .form-success {
+  display: none;
+  background: var(--color-success-tint);
+  border-inline-start: 3px solid var(--color-success);
+  color: var(--color-ink);
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  margin-top: var(--space-2);
+  font-size: 15px;
+  text-align: start;
+}
+.contact-form .form-success.is-visible { display: block; }
+
 .stars-motif {
   position: absolute;
   inset: 0;

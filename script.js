@@ -1,15 +1,29 @@
 (function () {
   var WA_NUMBER = '972535261436';
 
-  function buildWaHref(tourName) {
+  // Click/UTM tracking (final-improvement-plan.md section 6, "QA and launch":
+  // "מעקב קליקים על וואטסאפ, UTM/מספור"): every wa.me link gets its own
+  // utm_campaign so a real click from the hero, a specific tour card, the
+  // final-cta section, or the floating button is distinguishable later, per
+  // its own data-utm-campaign attribute in index.html. No analytics tool
+  // reads these params yet (a real, separate gap already flagged in
+  // _process/115-marketing-manager-plan.md), that is not this fix's job,
+  // the params themselves are the explicit, already-approved deliverable.
+  function buildWaHref(tourName, utmCampaign) {
     var text = tourName
       ? 'היי, אני מעוניין/ת בטיול "' + tourName + '", אפשר לתאם?'
       : 'היי, אני רוצה לתאם טיול';
-    return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text);
+    var params = [
+      'utm_source=site',
+      'utm_medium=cta',
+      'utm_campaign=' + encodeURIComponent(utmCampaign || 'other'),
+      'text=' + encodeURIComponent(text)
+    ];
+    return 'https://wa.me/' + WA_NUMBER + '?' + params.join('&');
   }
 
   document.querySelectorAll('[data-wa-tour]').forEach(function (el) {
-    el.setAttribute('href', buildWaHref(el.getAttribute('data-wa-tour')));
+    el.setAttribute('href', buildWaHref(el.getAttribute('data-wa-tour'), el.getAttribute('data-utm-campaign')));
   });
 
   // FAQ accordion
@@ -96,5 +110,41 @@
     };
     window.addEventListener('scroll', toggleFloat, { passive: true });
     toggleFloat();
+  }
+
+  // Minimal contact form (final-page-copy.md section 9, "סגירה": "טופס
+  // מינימלי (למי שלא בוואטסאפ)"). No backend on this static site, so this
+  // builds a real mailto: link from the field values and shows a visible
+  // success message on submit, the exact same real, working pattern already
+  // shipped in the sibling O-output/15-yariv-avraham-tours/site/script.js's
+  // #contactForm handler. The form's own action="mailto:...", plus native
+  // required/pattern validation on the inputs, remain a true native
+  // fallback: with JS disabled, the browser still blocks an invalid submit
+  // (empty name, malformed phone, no tour picked) and still opens the
+  // visitor's mail client via the form's own action when it is valid.
+  var contactForm = document.getElementById('contactForm');
+  var contactSuccess = document.getElementById('formSuccess');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function (e) {
+      // Honeypot: a real visitor never sees or fills this field (hidden via
+      // .hp-field, aria-hidden, tabindex="-1"); a bot that fills every field
+      // trips this and gets a silent no-op, no mailto, no success message.
+      var honeypot = document.getElementById('website');
+      if (honeypot && honeypot.value) {
+        e.preventDefault();
+        return;
+      }
+      // This handler only runs once the form already passed native
+      // required/pattern validation (an invalid native submit never fires
+      // this 'submit' event at all), so the values below are already valid.
+      var name = document.getElementById('fullName').value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      var tour = document.getElementById('tour').value;
+      var body = 'שם מלא: ' + name + '\nטלפון: ' + phone + '\nטיול מבוקש: ' + tour;
+      var mailto = 'mailto:yariva74@gmail.com?subject=' + encodeURIComponent('פנייה מהאתר: ' + tour) + '&body=' + encodeURIComponent(body);
+      e.preventDefault();
+      window.location.href = mailto;
+      if (contactSuccess) contactSuccess.classList.add('is-visible');
+    });
   }
 })();
